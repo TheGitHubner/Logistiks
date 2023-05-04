@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hubner.logistiksapi.domain.model.Client;
 import com.hubner.logistiksapi.domain.repository.ClientRepository;
+import com.hubner.logistiksapi.domain.service.ClientCatalogService;
 
 import lombok.AllArgsConstructor;
 
@@ -38,6 +39,7 @@ public class ClientController {
 	
 	@Autowired
 	private ClientRepository clientRepository;
+	private ClientCatalogService clientCatalogService;
 
 	@GetMapping()
 	public List<Client> getClients() {
@@ -64,7 +66,7 @@ public class ClientController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Client saveClient(@Valid @RequestBody Client client) {
-		return clientRepository.save(client);
+		return clientCatalogService.save(client);
 	}
 	
 	@PutMapping("/{clientId}")
@@ -76,7 +78,7 @@ public class ClientController {
 		}
 		
 		client.setId(clientId);
-		client = clientRepository.save(client);
+		client = clientCatalogService.save(client);
 		
 		return ResponseEntity.ok(client);
 	}
@@ -86,7 +88,8 @@ public class ClientController {
 		if(!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
-		clientRepository.deleteById(clientId);
+		
+		clientCatalogService.delete(clientId);
 		
 		return ResponseEntity.noContent().build();
 	}
