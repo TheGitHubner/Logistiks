@@ -33,10 +33,10 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
-	
+
 //	@PersistenceContext
 //	private EntityManager manager;
-	
+
 	@Autowired
 	private ClientRepository clientRepository;
 	private ClientCatalogService clientCatalogService;
@@ -44,54 +44,52 @@ public class ClientController {
 	@GetMapping()
 	public List<Client> getClients() {
 		return clientRepository.findAll();
-		
+
 //		List<Client> clients = new ArrayList<>();
 //		return manager.createQuery("from Client", Client.class)
 //				.getResultList();
 
 	}
-	
+
 	@GetMapping("/clients-by-name")
 	public List<Client> getClientByName(@Param(value = "name") String name) {
 		return clientRepository.findByNameContaining(name);
 	}
-	
+
 	@GetMapping("/{clientId}")
 	public ResponseEntity<Client> getClientById(@PathVariable Long clientId) {
 		return clientRepository.findById(clientId)
-				.map(client -> ResponseEntity.ok(client))
-				.orElse(ResponseEntity.notFound().build());
+								.map(client -> ResponseEntity.ok(client))
+								.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Client saveClient(@Valid @RequestBody Client client) {
 		return clientCatalogService.save(client);
 	}
-	
+
 	@PutMapping("/{clientId}")
-	public ResponseEntity<Client> updateClient(@Valid 
-			                                   @PathVariable Long clientId, 
-											   @RequestBody Client client){
-		if(!clientRepository.existsById(clientId)) {
+	public ResponseEntity<Client> updateClient(@Valid @PathVariable Long clientId, @RequestBody Client client) {
+		if (!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		client.setId(clientId);
 		client = clientCatalogService.save(client);
-		
+
 		return ResponseEntity.ok(client);
 	}
-	
+
 	@DeleteMapping("/{clientId}")
-	public ResponseEntity<Void> updateClient(@PathVariable Long clientId){
-		if(!clientRepository.existsById(clientId)) {
+	public ResponseEntity<Void> updateClient(@PathVariable Long clientId) {
+		if (!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		clientCatalogService.delete(clientId);
-		
+
 		return ResponseEntity.noContent().build();
 	}
-	
+
 }
